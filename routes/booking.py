@@ -48,6 +48,12 @@ def categories():
                 'image_url': 'puberty.jpg',
                 'base_price': 1500,
             },
+            {
+                'name': 'Reception Photography',
+                'description': 'Celebrate your wedding reception with professional photography',
+                'image_url': 'wedding.jpg',
+                'base_price': 5000,
+            },
         ]
 
     return render_template(

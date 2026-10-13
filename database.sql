@@ -103,7 +103,8 @@ INSERT INTO categories (name, description, image_url, base_price) VALUES
 ('Baby Photography', 'Cherish your little one''s first precious moments.', 'baby.jpg', 1800),
 ('Pre-Wedding Photography', 'Create timeless portraits before your forever begins.', 'prewedding.jpg', 3500),
 ('Maternity Photography', 'Celebrate the glow and joy of your pregnancy journey.', 'maternity.jpg', 2800),
-('Milestone Photography', 'Preserve precious milestone moments forever', 'puberty.jpg', 1500);
+('Milestone Photography', 'Preserve precious milestone moments forever', 'puberty.jpg', 1500),
+('Reception Photography', 'Celebrate your wedding reception with professional photography', 'wedding.jpg', 5000);
 
 -- Create indexes for better performance
 CREATE INDEX idx_user_email ON users(email);
