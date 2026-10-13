@@ -93,7 +93,11 @@ def login():
             "SELECT * FROM users WHERE email = %s",
             (email,)
         )
-        
+
+        if not db.is_connected():
+            flash('Login is temporarily unavailable because the database is not connected. Please try again later.', 'danger')
+            return render_template('login.html'), 503
+
         if user and len(user) > 0 and check_password_hash(user[0]['password'], password):
             session['user_id'] = user[0]['id']
             session['username'] = user[0]['username']

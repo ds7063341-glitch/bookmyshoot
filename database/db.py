@@ -19,10 +19,28 @@ class Database:
                 password=self.password,
                 database=self.database
             )
-            if self.connection.is_connected():
+            if self.is_connected():
                 print(f"Connected to {self.database} database successfully")
+                return True
+            self.connection = None
         except Error as e:
+            self.connection = None
             print(f"Error while connecting to MySQL: {e}")
+        return False
+
+    def is_connected(self):
+        """Check whether a usable MySQL connection is available."""
+        try:
+            return bool(self.connection and self.connection.is_connected())
+        except Error as e:
+            self.connection = None
+            print(f"Error checking MySQL connection: {e}")
+            return False
+
+    def _ensure_connection(self):
+        if self.is_connected():
+            return True
+        return self.connect()
     
     def disconnect(self):
         """Close database connection"""
@@ -33,8 +51,8 @@ class Database:
     def execute_query(self, query, params=None):
         """Execute a SELECT query"""
         try:
-            if not self.connection or not self.connection.is_connected():
-                self.connect()
+            if not self._ensure_connection():
+                return []
             cursor = self.connection.cursor(dictionary=True)
             if params:
                 cursor.execute(query, params)
@@ -50,8 +68,8 @@ class Database:
     def execute_insert(self, query, params=None):
         """Execute INSERT query"""
         try:
-            if not self.connection or not self.connection.is_connected():
-                self.connect()
+            if not self._ensure_connection():
+                return None
             cursor = self.connection.cursor()
             if params:
                 cursor.execute(query, params)
@@ -62,15 +80,16 @@ class Database:
             cursor.close()
             return last_id
         except Error as e:
-            self.connection.rollback()
+            if self.is_connected():
+                self.connection.rollback()
             print(f"Error inserting data: {e}")
             return None
     
     def execute_update(self, query, params=None):
         """Execute UPDATE query"""
         try:
-            if not self.connection or not self.connection.is_connected():
-                self.connect()
+            if not self._ensure_connection():
+                return None
             cursor = self.connection.cursor()
             if params:
                 cursor.execute(query, params)
@@ -81,15 +100,16 @@ class Database:
             cursor.close()
             return affected_rows
         except Error as e:
-            self.connection.rollback()
+            if self.is_connected():
+                self.connection.rollback()
             print(f"Error updating data: {e}")
             return None
     
     def execute_delete(self, query, params=None):
         """Execute DELETE query"""
         try:
-            if not self.connection or not self.connection.is_connected():
-                self.connect()
+            if not self._ensure_connection():
+                return None
             cursor = self.connection.cursor()
             if params:
                 cursor.execute(query, params)
@@ -100,7 +120,8 @@ class Database:
             cursor.close()
             return affected_rows
         except Error as e:
-            self.connection.rollback()
+            if self.is_connected():
+                self.connection.rollback()
             print(f"Error deleting data: {e}")
             return None
 
