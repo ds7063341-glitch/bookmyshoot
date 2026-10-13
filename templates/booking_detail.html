@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Details - BookMyShoot{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Booking #{{ booking.id }} Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Category:</strong> {{ booking.category_name }}</p>
+                            <p><strong>Photographer:</strong> {{ booking.photographer_name }}</p>
+                            <p><strong>Event Date:</strong> {{ booking.event_date }}</p>
+                            <p><strong>Event Time:</strong> {{ booking.event_time }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Location:</strong> {{ booking.event_location }}</p>
+                            <p><strong>Duration:</strong> {{ booking.duration_hours }} hours</p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-{{ 'success' if booking.status == 'confirmed' else 'warning' if booking.status == 'pending' else 'info' if booking.status == 'completed' else 'danger' }}">
+                                    {{ booking.status|capitalize }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if booking.special_requests %}
+                        <hr>
+                        <p><strong>Special Requests:</strong></p>
+                        <p>{{ booking.special_requests }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Photographer Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Photographer Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Email:</strong> {{ booking.email }}</p>
+                    <p><strong>Phone:</strong> {{ booking.phone or 'Not provided' }}</p>
+                    <p><strong>Rating:</strong> {{ booking.rating or 'N/A' }}</p>
+                    <p><strong>Total Bookings:</strong> {{ booking.total_bookings }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Pricing Summary -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Amount Summary</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Base Price:</strong> ₹--</p>
+                    <p><strong>Hourly Rate:</strong> ₹-- × {{ booking.duration_hours }} hrs</p>
+                    <hr>
+                    <h4><strong>Total:</strong> <span class="text-success">₹{{ "%.2f"|format(booking.total_amount) }}</span></h4>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    {% if booking.status == 'pending' %}
+                        <a href="{{ url_for('payment.payment_page', booking_id=booking.id) }}" class="btn btn-success w-100 mb-2">
+                            <i class="fas fa-credit-card"></i> Make Payment
+                        </a>
+                    {% endif %}
+
+                    {% if booking.status in ['pending', 'confirmed'] %}
+                        <button onclick="cancelBooking({{ booking.id }})" class="btn btn-danger w-100">
+                            <i class="fas fa-times"></i> Cancel Booking
+                        </button>
+                    {% endif %}
+
+                    <a href="{{ url_for('booking.my_bookings') }}" class="btn btn-outline-secondary w-100 mt-2">
+                        <i class="fas fa-arrow-left"></i> Back to Bookings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function cancelBooking(bookingId) {
+    if (confirm('Are you sure you want to cancel this booking?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `{{ url_for('booking.cancel_booking', booking_id='0') }}`.replace('0', bookingId);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - BookMyShoot{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4"><i class="fas fa-credit-card"></i> Payment</h2>
+            
+            <!-- Booking Summary -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Booking Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Category:</strong> {{ booking.category_name }}</p>
+                            <p><strong>Photographer:</strong> {{ booking.photographer_name }}</p>
+                            <p><strong>Event Date:</strong> {{ booking.event_date }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Event Location:</strong> {{ booking.event_location }}</p>
+                            <p><strong>Duration:</strong> {{ booking.duration_hours }} hours</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h4 class="text-end">Total Amount: <span class="text-primary">₹{{ "%.2f"|format(booking.total_amount) }}</span></h4>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Select Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('payment.payment_page', booking_id=booking.id) }}">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="credit_card" value="credit_card" required>
+                                <label class="form-check-label" for="credit_card">
+                                    <i class="fas fa-credit-card"></i> Credit/Debit Card
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="razorpay" value="razorpay">
+                                <label class="form-check-label" for="razorpay">
+                                    <i class="fas fa-wallet"></i> Razorpay
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="bank_transfer" value="bank_transfer">
+                                <label class="form-check-label" for="bank_transfer">
+                                    <i class="fas fa-university"></i> Bank Transfer
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-arrow-right"></i> Proceed to Payment
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Security Info -->
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-shield-alt"></i> Your payment information is encrypted and secure.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

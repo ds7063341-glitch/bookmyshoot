@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Home - BookMyShoot{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section" style="background-image: linear-gradient(rgba(5, 15, 30, 0.55), rgba(17, 59, 108, 0.7)), url('{{ url_for('static', filename='images/owner.jpg') }}'); background-size: cover; background-position: center 32%; background-attachment: fixed;">
+        <div class="hero-content text-center text-white">
+            <div class="fade-in">
+                <h1 class="display-3 fw-bold mb-3" style="animation: slideInUp 0.8s ease;">Book Your Perfect Photographer</h1>
+                <p class="lead mb-4" style="animation: slideInUp 0.8s ease 0.2s backwards; font-size: 1.3rem;">Professional photography for every occasion</p>
+                <div style="animation: slideInUp 0.8s ease 0.4s backwards;">
+                    <a href="{{ url_for('booking.categories') }}" class="btn btn-light btn-lg me-2">
+                        <i class="fas fa-images"></i> Browse Categories
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-user-plus"></i> Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Features Section -->
+    <section class="mb-5 mt-5">
+        <h2 class="text-center mb-5">Why Choose BookMyShoot?</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Professional Photographers</h5>
+                        <p class="card-text">Verified and experienced photographers for every occasion</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Secure Payments</h5>
+                        <p class="card-text">Safe and encrypted payment processing</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-clock fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Easy Booking</h5>
+                        <p class="card-text">Simple and quick booking process in minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Our Services</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <img src="{{ url_for('static', filename='images/hero.jpg') }}" class="card-img-top" alt="Wedding Photography">
+                    <div class="card-body">
+                        <h5 class="card-title">Wedding Photography</h5>
+                        <p class="card-text">Capture your special day with our expert photographers</p>
+                        <a href="{{ url_for('booking.categories') }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <img src="{{ url_for('static', filename='images/birthday.jpg') }}" class="card-img-top" alt="Birthday Photography">
+                    <div class="card-body">
+                        <h5 class="card-title">Birthday Photography</h5>
+                        <p class="card-text">Make your birthday celebrations memorable</p>
+                        <a href="{{ url_for('booking.categories') }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <img src="{{ url_for('static', filename='images/puberty.jpg') }}" class="card-img-top" alt="Puberty Photography">
+                    <div class="card-body">
+                        <h5 class="card-title">Milestone Photography</h5>
+                        <p class="card-text">Preserve precious milestone moments forever</p>
+                        <a href="{{ url_for('booking.categories') }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 category-card text-center border-0">
+                    <img src="{{ url_for('static', filename='images/baby.jpg') }}" class="card-img-top" alt="Baby Photography">
+                    <div class="card-body px-4 py-4">
+                        <h5 class="card-title">Baby Photography</h5>
+                        <p class="card-text">Cherish your little one’s first precious moments.</p>
+                        <a href="{{ url_for('booking.categories') }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 category-card text-center border-0">
+                    <img src="{{ url_for('static', filename='images/prewedding.jpg') }}" class="card-img-top" alt="Pre-Wedding Photography">
+                    <div class="card-body px-4 py-4">
+                        <h5 class="card-title">Pre-Wedding Photography</h5>
+                        <p class="card-text">Create timeless portraits before your forever begins.</p>
+                        <a href="{{ url_for('booking.categories') }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 category-card text-center border-0">
+                    <img src="{{ url_for('static', filename='images/maternity.jpg') }}" class="card-img-top" alt="Maternity Photography">
+                    <div class="card-body px-4 py-4">
+                        <h5 class="card-title">Maternity Photography</h5>
+                        <p class="card-text">Celebrate the glow and joy of your pregnancy journey.</p>
+                        <a href="{{ url_for('booking.categories') }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-primary text-white py-5 rounded mb-5">
+        <div class="text-center">
+            <h2 class="mb-3">Ready to Book?</h2>
+              <p class="lead mb-4">Start your booking journey now</p>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('booking.create_booking') }}" class="btn btn-light btn-lg">Create Booking</a>
+            {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">Get Started</a>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

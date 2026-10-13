@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Setup Instructions - BookMyShoot{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">BookMyShoot Setup Instructions</h2>
+        </div>
+        <div class="card-body">
+            <h3 class="mb-3">Prerequisites</h3>
+            <ul>
+                <li>Python 3.8+</li>
+                <li>MySQL Server 5.7+</li>
+                <li>pip (Python package manager)</li>
+                <li>Virtual Environment (recommended)</li>
+            </ul>
+
+            <h3 class="mt-4 mb-3">Installation Steps</h3>
+
+            <div class="accordion" id="setupAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#step1">
+                            <strong>Step 1: Install Dependencies</strong>
+                        </button>
+                    </h2>
+                    <div id="step1" class="accordion-collapse collapse show" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body">
+                            <pre><code>pip install -r requirements.txt</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step2">
+                            <strong>Step 2: Configure Database</strong>
+                        </button>
+                    </h2>
+                    <div id="step2" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body">
+                            <p>Edit <code>database/db.py</code> to set your MySQL credentials:</p>
+                            <pre><code>self.host = 'localhost'
+self.user = 'root'
+self.password = 'your_password'
+self.database = 'bookmyshoot'</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step3">
+                            <strong>Step 3: Initialize Database</strong>
+                        </button>
+                    </h2>
+                    <div id="step3" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body">
+                            <p>Execute the SQL schema:</p>
+                            <pre><code>mysql -u root -p < database.sql</code></pre>
+                            <p>Or use Flask CLI:</p>
+                            <pre><code>flask init-db</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step4">
+                            <strong>Step 4: Create Admin User</strong>
+                        </button>
+                    </h2>
+                    <div id="step4" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body">
+                            <pre><code>flask create-admin</code></pre>
+                            <p>Follow the prompts to create an admin account.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step5">
+                            <strong>Step 5: Run Application</strong>
+                        </button>
+                    </h2>
+                    <div id="step5" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                        <div class="accordion-body">
+                            <pre><code>python app.py</code></pre>
+                            <p>The application will be available at <code>http://localhost:5000</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="mt-4 mb-3">Environment Variables</h3>
+            <p>Create a <code>.env</code> file in the root directory:</p>
+            <pre><code>FLASK_ENV=development
+SECRET_KEY=your-secret-key-here
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=bookmyshoot</code></pre>
+
+            <h3 class="mt-4 mb-3">Project Structure</h3>
+            <pre><code>BookMyShoot/
+├── app.py                 # Main application
+├── database.sql           # Database schema
+├── requirements.txt       # Python dependencies
+├── database/
+│   └── db.py             # Database connection class
+├── routes/
+│   ├── auth.py           # Authentication routes
+│   ├── booking.py        # Booking routes
+│   └── payment.py        # Payment routes
+├── templates/            # HTML templates
+│   ├── base.html
+│   ├── index.html
+│   ├── login.html
+│   ├── register.html
+│   ├── categories.html
+│   ├── booking.html
+│   ├── payment.html
+│   ├── success.html
+│   ├── mybookings.html
+│   └── admin.html
+└── static/
+    ├── css/
+    │   └── style.css
+    ├── js/
+    │   └── script.js
+    └── images/
+        ├── logo.png
+        ├── wedding.jpg
+        ├── birthday.jpg
+        ├── puberty.jpg
+        └── hero.jpg</code></pre>
+
+            <h3 class="mt-4 mb-3">Features</h3>
+            <ul>
+                <li><strong>User Authentication:</strong> Register, login, and manage profiles</li>
+                <li><strong>Photography Categories:</strong> Browse different photography services</li>
+                <li><strong>Photographer Listing:</strong> View available photographers with ratings</li>
+                <li><strong>Booking System:</strong> Create, view, and manage bookings</li>
+                <li><strong>Payment Processing:</strong> Multiple payment methods (Card, Razorpay, Bank Transfer)</li>
+                <li><strong>Admin Dashboard:</strong> Manage users, bookings, and payments</li>
+                <li><strong>Responsive Design:</strong> Mobile-friendly interface</li>
+            </ul>
+
+            <h3 class="mt-4 mb-3">Default Login Credentials</h3>
+            <p>After creating an admin user, you can login with the credentials you provided during setup.</p>
+
+            <div class="alert alert-warning mt-4">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Security Note:</strong> 
+                Make sure to change the SECRET_KEY in production and enable HTTPS!
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Category Details - BookMyShoot{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Category Header -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/' + category.image_url) }}" class="card-img-top" alt="{{ category.name }}" style="max-height: 400px; object-fit: cover;">
+                <div class="card-body">
+                    <h1 class="card-title">{{ category.name }}</h1>
+                    <p class="card-text">{{ category.description }}</p>
+                    <p class="text-primary fw-bold">Base Price: ₹{{ "%.2f"|format(category.base_price) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Photographers -->
+    <h2 class="mb-4">Available Photographers</h2>
+    
+    {% if photographers %}
+        <div class="row">
+            {% for photographer in photographers %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-user-circle" style="font-size: 60px; color: #007bff;"></i>
+                            </div>
+                            <h5 class="card-title">{{ photographer.full_name }}</h5>
+                            <p class="text-muted">{{ photographer.category_name }}</p>
+                            
+                            <div class="mb-3">
+                                <p><strong>Hourly Rate:</strong> ₹{{ "%.2f"|format(photographer.hourly_rate) }}/hr</p>
+                                <p><strong>Rating:</strong> 
+                                    {% if photographer.rating %}
+                                        <span class="text-warning">
+                                            {% for i in range(1, 6) %}
+                                                {% if i <= photographer.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                        ({{ photographer.rating }})
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </p>
+                                <p><strong>Bookings:</strong> {{ photographer.total_bookings }}</p>
+                            </div>
+
+                            <a href="{{ url_for('booking.create_booking') }}?photographer_id={{ photographer.id }}&category_id={{ category.id }}" class="btn btn-primary w-100">
+                                <i class="fas fa-calendar"></i> Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No photographers available for this category at the moment.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Create Booking - BookMyShoot{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4"><i class="fas fa-calendar-check"></i> Create Booking</h2>
+                    
+                    <form method="POST" action="{{ url_for('booking.create_booking') }}" id="bookingForm">
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">Photography Category *</label>
+                            <select class="form-control" id="category_id" name="category_id" required onchange="loadPhotographers()">
+                                <option value="">Select a category</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }} - ₹{{ "%.2f"|format(category.base_price) }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Photographer</label>
+                            <div id="photographer_container">
+                                <div class="text-muted">Photographer will be assigned automatically based on category.</div>
+                                <!-- Hidden input will be injected here by JS with selected photographer id -->
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="event_date" class="form-label">Event Date *</label>
+                                <input type="date" class="form-control" id="event_date" name="event_date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="event_time" class="form-label">Event Time *</label>
+                                <input type="time" class="form-control" id="event_time" name="event_time" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="event_location" class="form-label">Event Location *</label>
+                            <input type="text" class="form-control" id="event_location" name="event_location" placeholder="Enter event location" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="duration_hours" class="form-label">Duration (Hours) *</label>
+                            <input type="number" class="form-control" id="duration_hours" name="duration_hours" min="1" step="0.5" placeholder="e.g., 4" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="special_requests" class="form-label">Special Requests</label>
+                            <textarea class="form-control" id="special_requests" name="special_requests" rows="4" placeholder="Any special requests or notes for the photographer..."></textarea>
+                        </div>
+
+                        <div class="alert alert-info" id="priceAlert" style="display:none;">
+                            <strong>Estimated Total:</strong> <span id="totalPrice">₹0.00</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check"></i> Create Booking
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function loadPhotographers() {
+    const categoryId = document.getElementById('category_id').value;
+    const photographerSelect = document.getElementById('photographer_id');
+    
+    if (!categoryId) {
+        photographerSelect.innerHTML = '<option value="">Select a photographer</option>';
+        return;
+    }
+    
+    // build URL from a safe integer placeholder then replace it with the selected id
+    const apiBase = "{{ url_for('booking.get_photographers', category_id=0) }}";
+    const apiUrl = apiBase.replace('/0', '/' + categoryId);
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Photographers API returned:', data);
+            const container = document.getElementById('photographer_container');
+
+            // If there is at least one photographer, auto-select the top one (first result)
+            if (Array.isArray(data) && data.length >= 1) {
+                const p = data[0];
+                container.innerHTML = `
+                    <div class="card p-2 mb-2">
+                        <div><strong>${p.full_name}</strong></div>
+                        <div class="text-muted">₹${p.hourly_rate}/hr · Rating: ${p.rating || 'N/A'}</div>
+                    </div>
+                    <input type="hidden" id="photographer_id" name="photographer_id" value="${p.id}">
+                `;
+                // enable submit button
+                const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = false;
+                updatePrice();
+            } else {
+                // No photographers available for this category
+                container.innerHTML = '<div class="alert alert-warning">No photographers available for the selected category.</div>';
+                // remove hidden input if present
+                const existing = document.getElementById('photographer_id');
+                if (existing) existing.remove();
+                // disable submit button
+                const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+                updatePrice();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Auto-load photographers if a category is already selected on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryId = document.getElementById('category_id').value;
+    if (categoryId) {
+        loadPhotographers();
+    }
+});
+
+document.getElementById('duration_hours').addEventListener('change', function() {
+    updatePrice();
+});
+
+document.getElementById('photographer_id').addEventListener('change', function() {
+    updatePrice();
+});
+
+function updatePrice() {
+    // This is a placeholder - actual calculation would need backend data
+    const priceAlert = document.getElementById('priceAlert');
+    if (document.getElementById('photographer_id').value && document.getElementById('duration_hours').value) {
+        priceAlert.style.display = 'block';
+    } else {
+        priceAlert.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - BookMyShoot{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+
+    {% if session.get('role') != 'admin' %}
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i> Access denied. Admin only.
+        </div>
+    {% else %}
+        <!-- Dashboard Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Users</h5>
+                        <h2>--</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Bookings</h5>
+                        <h2>--</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Payments</h5>
+                        <h2>--</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Revenue</h5>
+                        <h2>₹--</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#categories" role="tab">
+                    <i class="fas fa-tags"></i> Category Prices
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#bookings" role="tab">
+                    <i class="fas fa-calendar-check"></i> Bookings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#payments" role="tab">
+                    <i class="fas fa-credit-card"></i> Payments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#users" role="tab">
+                    <i class="fas fa-users"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#photographers" role="tab">
+                    <i class="fas fa-camera"></i> Photographers
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Category Prices Tab -->
+            <div id="categories" class="tab-pane fade" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Edit Photography Category Prices</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Base Price (₹)</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for category in categories %}
+                                        <tr>
+                                            <td>{{ category.name }}</td>
+                                            <td>{{ category.description }}</td>
+                                            <td>
+                                                <form id="update-price-{{ category.id }}" method="POST" action="{{ url_for('update_category_price') }}">
+                                                    <input type="hidden" name="category_id" value="{{ category.id }}">
+                                                </form>
+                                                <label class="visually-hidden" for="base-price-{{ category.id }}">Price for {{ category.name }}</label>
+                                                <input id="base-price-{{ category.id }}" class="form-control" type="text" inputmode="decimal" name="base_price" form="update-price-{{ category.id }}" pattern="[0-9]+(\.[0-9]{1,2})?" title="Enter a positive price with up to two decimal places." value="{{ '%.2f'|format(category.base_price) }}" onfocus="this.select()" required>
+                                            </td>
+                                            <td>
+                                                <button type="submit" form="update-price-{{ category.id }}" class="btn btn-primary">Save Price</button>
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">No active categories found.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Tab -->
+            <div id="bookings" class="tab-pane fade show active" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">All Bookings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Customer</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7" class="text-center">Loading bookings...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Tab -->
+            <div id="payments" class="tab-pane fade" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Payment Transactions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Payment ID</th>
+                                        <th>Booking ID</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6" class="text-center">Loading payments...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="users" class="tab-pane fade" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Registered Users</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Full Name</th>
+                                        <th>Role</th>
+                                        <th>Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6" class="text-center">Loading users...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photographers Tab -->
+            <div id="photographers" class="tab-pane fade" role="tabpanel">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Add Photographer</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('add_photographer') }}">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">User</label>
+                                    <select class="form-select" name="user_id" required>
+                                        <option value="">Select a user</option>
+                                        {% for user in users %}
+                                            <option value="{{ user.id }}">{{ user.full_name }} ({{ user.username }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" name="category_id" required>
+                                        <option value="">Select a category</option>
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Hourly Rate</label>
+                                    <input type="number" class="form-control" name="hourly_rate" min="0" step="0.01" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Rating</label>
+                                    <input type="number" class="form-control" name="rating" min="0" max="5" step="0.1" value="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Available</label>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" name="is_available" checked>
+                                        <label class="form-check-label">Available for bookings</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Bio</label>
+                                    <textarea class="form-control" name="bio" rows="3" placeholder="Short profile description"></textarea>
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button type="submit" class="btn btn-primary">Add Photographer</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Photographers</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Photo</th>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Rating</th>
+                                        <th>Bookings</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if photographers %}
+                                        {% for photographer in photographers %}
+                                            <tr>
+                                                <td class="text-center align-middle">
+                                                    <div class="rounded-circle bg-light text-primary d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; font-weight: bold;">
+                                                        {{ photographer.full_name[0]|upper if photographer.full_name else 'P' }}
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">{{ photographer.id }}</td>
+                                                <td class="align-middle">{{ photographer.full_name }}</td>
+                                                <td class="align-middle">{{ photographer.category_name }}</td>
+                                                <td class="align-middle">{{ photographer.rating or 0 }}</td>
+                                                <td class="align-middle">{{ photographer.total_bookings or 0 }}</td>
+                                                <td class="align-middle">
+                                                    {% if photographer.is_available %}
+                                                        <span class="badge bg-success">Available</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Not Available</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7" class="text-center">No photographers found.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
